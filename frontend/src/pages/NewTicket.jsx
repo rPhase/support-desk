@@ -16,8 +16,8 @@ const NewTicket = () => {
 
   const { name, email } = user;
 
-  const [product, setProduct] = useState(user.product);
-  const [description, setDescription] = useState(user.description);
+  const [product, setProduct] = useState('Xbox 360');
+  const [description, setDescription] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -25,6 +25,7 @@ const NewTicket = () => {
   useEffect(() => {
     if (isError) {
       toast.error(message);
+      dispatch(reset());
       return;
     }
     if (isSuccess) {

@@ -31,7 +31,7 @@ const getTicket = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 
-  const ticket = await Ticket.findById(req.params.id);
+  const ticket = await Ticket.findById(req.params.id).catch(() => {});
 
   if (!ticket) {
     res.status(404);
