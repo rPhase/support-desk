@@ -5,10 +5,16 @@ import { toast } from 'react-toastify';
 import BackButton from '../components/BackButton';
 import Spinner from '../components/Spinner';
 import { getTicket, reset, closeTicket } from '../features/tickets/ticketSlice';
+import { getNotes, reset as notesReset } from '../features/notes/noteSlice';
+import NoteItem from '../components/NoteItem';
 
 const Ticket = () => {
   const { ticket, isLoading, isSuccess, isError, message } = useSelector(
     (state) => state.ticket
+  );
+
+  const { notes, isLoading: notesIsLoading } = useSelector(
+    (state) => state.note
   );
 
   const navigate = useNavigate();
@@ -17,6 +23,7 @@ const Ticket = () => {
 
   useEffect(() => {
     dispatch(getTicket(ticketID));
+    dispatch(getNotes(ticketID));
     if (isError) {
       toast.error(message);
       return;
@@ -36,7 +43,7 @@ const Ticket = () => {
     navigate('/tickets');
   };
 
-  if (isLoading) {
+  if (isLoading || notesIsLoading) {
     return <Spinner />;
   }
 
@@ -66,7 +73,11 @@ const Ticket = () => {
             </div>
           </>
         )}
+        <h2>Notes</h2>
       </header>
+      {notes.map((note) => (
+        <NoteItem key={note._id} note={note} />
+      ))}
       {ticket && ticket.status !== 'closed' && (
         <button
           className='btn btn-block btn-danger btn-danger'
