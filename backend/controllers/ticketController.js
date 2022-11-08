@@ -1,19 +1,13 @@
 const asyncHandler = require('express-async-handler');
-const User = require('../models/userModel');
 const Ticket = require('../models/ticketModel');
+
+// Protect middleware already checks for valid user
+// const User = require('../models/userModel');
 
 // @desc    Get user tickets
 // @route   GET /api/tickets
 // @access  Private
 const getTickets = asyncHandler(async (req, res) => {
-  // Get user using the id in the JWT
-  const user = await User.findById(req.user.id);
-
-  if (!user) {
-    res.status(401);
-    throw new Error('User not found');
-  }
-
   const tickets = await Ticket.find({ user: req.user.id });
 
   res.status(200).json(tickets);
@@ -23,14 +17,6 @@ const getTickets = asyncHandler(async (req, res) => {
 // @route   GET /api/tickets/:id
 // @access  Private
 const getTicket = asyncHandler(async (req, res) => {
-  // Get user using the id in the JWT
-  const user = await User.findById(req.user.id);
-
-  if (!user) {
-    res.status(401);
-    throw new Error('User not found');
-  }
-
   const ticket = await Ticket.findById(req.params.id).catch(() => {});
 
   if (!ticket) {
@@ -53,20 +39,10 @@ const getTicket = asyncHandler(async (req, res) => {
 const createTicket = asyncHandler(async (req, res) => {
   const { product, description } = req.body;
 
-  console.log(product);
-
   // Validation
   if (!product || !description) {
     res.status(400);
     throw new Error('Please add a product and description');
-  }
-
-  // Get user using the id in the JWT
-  const user = await User.findById(req.user.id);
-
-  if (!user) {
-    res.status(401);
-    throw new Error('User not found');
   }
 
   // Create Ticket
@@ -84,14 +60,6 @@ const createTicket = asyncHandler(async (req, res) => {
 // @route   DELETE /api/tickets/:id
 // @access  Private
 const deleteTicket = asyncHandler(async (req, res) => {
-  // Get user using the id in the JWT
-  const user = await User.findById(req.user.id);
-
-  if (!user) {
-    res.status(401);
-    throw new Error('User not found');
-  }
-
   const ticket = await Ticket.findById(req.params.id);
 
   if (!ticket) {
@@ -115,14 +83,6 @@ const deleteTicket = asyncHandler(async (req, res) => {
 // @route   PUT /api/tickets/:id
 // @access  Private
 const updateTicket = asyncHandler(async (req, res) => {
-  // Get user using the id in the JWT
-  const user = await User.findById(req.user.id);
-
-  if (!user) {
-    res.status(401);
-    throw new Error('User not found');
-  }
-
   const ticket = await Ticket.findById(req.params.id);
 
   if (!ticket) {
