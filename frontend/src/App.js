@@ -22,17 +22,17 @@ function App() {
         <div className='container'>
           <Header />
           <Routes>
-            <Route path='/' element={<Home />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
-            <Route path='/new-ticket' element={<PrivateRoute />}>
+            {/* Protected Routes */}
+            <Route element={<PrivateRoute />}>
+              <Route path='/' element={<Home />} />
               <Route path='/new-ticket' element={<NewTicket />} />
-            </Route>
-            <Route path='/tickets' element={<PrivateRoute />}>
               <Route path='/tickets' element={<Tickets />} />
-            </Route>
-            <Route path='/ticket/' element={<Navigate to='/tickets' />} />
-            <Route path='/ticket/:ticketID' element={<PrivateRoute />}>
+              <Route
+                path='/ticket/'
+                element={<Navigate to='/tickets' replace />}
+              />
               <Route path='/ticket/:ticketID' element={<Ticket />} />
             </Route>
           </Routes>

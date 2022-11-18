@@ -1,12 +1,10 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useSelector, useDispatch } from 'react-redux';
-import { login, reset } from '../features/auth/authSlice';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Spinner from '../components/Spinner';
+import { login, reset } from '../features/auth/authSlice';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,10 +16,14 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const { user, isLoading, isSuccess, isError, message } = useSelector(
     (state) => state.auth
   );
+
+  // Keep track of previous location to redirect to
+  const from = location.state?.from?.pathname || '/';
 
   useEffect(() => {
     if (isError) {
@@ -29,11 +31,11 @@ const Login = () => {
     }
     // Redirect when logged in
     if (isSuccess && user) {
-      navigate('/');
+      navigate(from, { replace: true });
     }
 
     dispatch(reset());
-  }, [isError, isSuccess, user, message, navigate, dispatch]);
+  }, [isError, isSuccess, user, message, navigate, dispatch, from]);
 
   const onChangeHandler = (e) => {
     setFormData((prevState) => ({
