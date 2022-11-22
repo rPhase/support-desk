@@ -2,13 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import noteService from './noteService';
 import { extractErrorMessage } from '../utils';
 
-// Removed isLoading, isSuccess and reset
-// loading can be infered from presence or absence of data
-// success can be infered from presence or absence of error
+// Removed isLoading, isSuccess, isError, message, and reset
+// loading can be infered from presence or absence of notes
+// success can be infered from presence or absences of notes
+// error messages can be recieved at component level from AsynThunkAction
 const initialState = {
   notes: null,
-  isError: false,
-  message: '',
 };
 
 // Get ticket notes
@@ -43,24 +42,14 @@ export const noteSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getNotes.pending, (state) => {
+        // Reset notes to null to show spinner while fetching
         state.notes = null;
-        state.isError = false;
-        state.message = '';
       })
       .addCase(getNotes.fulfilled, (state, action) => {
         state.notes = action.payload;
       })
-      .addCase(getNotes.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
       .addCase(createNote.fulfilled, (state, action) => {
         state.notes.push(action.payload);
-      })
-      .addCase(createNote.rejected, (state, action) => {
-        state.isError = true;
-        state.message = action.payload;
       });
   },
 });

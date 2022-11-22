@@ -32,17 +32,16 @@ const Ticket = () => {
     (state) => state.ticket
   );
 
-  const { notes, isLoading: notesIsLoading } = useSelector(
-    (state) => state.note
-  );
+  const { notes } = useSelector((state) => state.note);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { ticketID } = useParams();
 
+  // Can unwrap resolved promise to extract error
   useEffect(() => {
     dispatch(getTicket(ticketID));
-    dispatch(getNotes(ticketID));
+    dispatch(getNotes(ticketID)).unwrap().catch(toast.error);
     if (isError) {
       toast.error(message);
       return;
@@ -66,13 +65,19 @@ const Ticket = () => {
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
+  // Create note
+  // Can unwrap resolved promise to extract error
   const onNoteSubmit = (e) => {
     e.preventDefault();
-    dispatch(createNote({ noteText, ticketID }));
-    closeModal();
+    dispatch(createNote({ noteText, ticketID }))
+      .unwrap()
+      .then(() => {
+        closeModal();
+      })
+      .catch(toast.error);
   };
 
-  if (isLoading || notesIsLoading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
