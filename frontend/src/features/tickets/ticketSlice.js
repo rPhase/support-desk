@@ -2,14 +2,13 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import ticketService from './ticketService';
 import { extractErrorMessage } from '../utils';
 
-// Remove isLoading, isSuccess state
+// Remove isLoading, isSuccess, isError, message state
 // loading can be infered from presence or absence of tickets
 // success can be infered from presence or absence of tickets
+// error messages can be recieved at component level from AsynThunkAction
 const initialState = {
   tickets: null,
   ticket: null,
-  isError: false,
-  message: '',
 };
 
 // Create new ticket
@@ -69,10 +68,6 @@ export const ticketSlice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder
-      .addCase(createTicket.rejected, (state, action) => {
-        state.isError = true;
-        state.message = action.payload;
-      })
       .addCase(getTickets.pending, (state) => {
         // Clear single ticket on tickets page
         state.ticket = null;
@@ -81,21 +76,12 @@ export const ticketSlice = createSlice({
         state.tickets = action.payload;
       })
       .addCase(getTickets.rejected, (state, action) => {
-        state.isError = true;
         state.message = action.payload;
       })
       .addCase(getTicket.fulfilled, (state, action) => {
         state.ticket = action.payload;
-        state.isError = false;
-        state.message = '';
-      })
-      .addCase(getTicket.rejected, (state, action) => {
-        state.isError = true;
-        state.message = action.payload;
       })
       .addCase(closeTicket.fulfilled, (state, action) => {
-        state.isError = false;
-        state.message = '';
         state.ticket = action.payload;
         state.tickets = state.tickets.map((ticket) =>
           ticket._id === action.payload._id ? action.payload : ticket

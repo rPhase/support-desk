@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import Modal from 'react-modal';
 import { FaPlus } from 'react-icons/fa';
+import Modal from 'react-modal';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import BackButton from '../components/BackButton';
-import Spinner from '../components/Spinner';
-import { getTicket, closeTicket } from '../features/tickets/ticketSlice';
-import { getNotes, createNote } from '../features/notes/noteSlice';
 import NoteItem from '../components/NoteItem';
+import Spinner from '../components/Spinner';
+import { createNote, getNotes } from '../features/notes/noteSlice';
+import { closeTicket, getTicket } from '../features/tickets/ticketSlice';
 
 const customStyles = {
   content: {
@@ -28,8 +28,7 @@ Modal.setAppElement('#root');
 const Ticket = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
-  const { ticket, isError, message } = useSelector((state) => state.ticket);
-
+  const { ticket } = useSelector((state) => state.ticket);
   const { notes } = useSelector((state) => state.note);
 
   const navigate = useNavigate();
@@ -38,19 +37,19 @@ const Ticket = () => {
 
   // Can unwrap resolved promise to extract error
   useEffect(() => {
-    dispatch(getTicket(ticketID));
+    dispatch(getTicket(ticketID)).unwrap().catch(toast.error);
     dispatch(getNotes(ticketID)).unwrap().catch(toast.error);
-    if (isError) {
-      toast.error(message);
-      return;
-    }
-  }, [isError, message, ticketID, dispatch]);
+  }, [ticketID, dispatch]);
 
   // Close Ticket
   const onTicketClose = () => {
-    dispatch(closeTicket(ticketID));
-    toast.success('Ticket Closed');
-    navigate('/tickets');
+    dispatch(closeTicket(ticketID))
+      .unwrap()
+      .then(() => {
+        toast.success('Ticket Closed');
+        navigate('/tickets');
+      })
+      .catch(toast.error);
   };
 
   // Open/Close Modal
