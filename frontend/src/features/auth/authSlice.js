@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import authService from './authService';
 import { extractErrorMessage } from '../utils';
 
@@ -34,9 +34,14 @@ export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
   }
 });
 
-// Logout user
-export const logout = createAsyncThunk('auth/logout', async () => {
-  await authService.logout();
+// Logout user (client side)
+// does not need to be async
+// createAction used instead of thunk
+export const logout = createAction('auth/logout', () => {
+  authService.logout();
+  // return empty object as the payload
+  // prepare function requires payload
+  return {};
 });
 
 export const authSlice = createSlice({
@@ -80,7 +85,7 @@ export const authSlice = createSlice({
         state.message = action.payload;
         state.user = null;
       })
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout, (state) => {
         state.user = null;
       });
   },
