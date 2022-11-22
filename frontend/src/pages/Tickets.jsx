@@ -29,6 +29,7 @@ const Tickets = () => {
           <div>Status</div>
           <div></div>
         </div>
+        {tickets.length === 0 ? <p>No tickets</p> : null}
         {tickets.map((ticket) => (
           <TicketItem key={ticket._id} ticket={ticket} />
         ))}

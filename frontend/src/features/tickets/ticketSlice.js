@@ -69,8 +69,10 @@ export const ticketSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getTickets.pending, (state) => {
-        // Clear single ticket on tickets page
+        // Clear ticket on tickets page to prevent old tickets
+        // from flashing before new ones are fetched
         state.ticket = null;
+        state.tickets = null;
       })
       .addCase(getTickets.fulfilled, (state, action) => {
         state.tickets = action.payload;
