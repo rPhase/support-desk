@@ -6,7 +6,7 @@ import { extractErrorMessage } from '../utils';
 // loading can be infered from presence or absence of data
 // success can be infered from presence or absence of error
 const initialState = {
-  notes: [],
+  notes: null,
   isError: false,
   message: '',
 };
@@ -43,7 +43,7 @@ export const noteSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getNotes.pending, (state) => {
-        state.notes = [];
+        state.notes = null;
         state.isError = false;
         state.message = '';
       })

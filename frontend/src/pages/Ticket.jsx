@@ -7,11 +7,7 @@ import { FaPlus } from 'react-icons/fa';
 import BackButton from '../components/BackButton';
 import Spinner from '../components/Spinner';
 import { getTicket, reset, closeTicket } from '../features/tickets/ticketSlice';
-import {
-  getNotes,
-  createNote,
-  reset as notesReset,
-} from '../features/notes/noteSlice';
+import { getNotes, createNote } from '../features/notes/noteSlice';
 import NoteItem from '../components/NoteItem';
 
 const customStyles = {
@@ -143,9 +139,12 @@ const Ticket = () => {
         </form>
       </Modal>
 
-      {notes.map((note) => (
-        <NoteItem key={note._id} note={note} />
-      ))}
+      {notes ? (
+        notes.map((note) => <NoteItem key={note._id} note={note} />)
+      ) : (
+        <Spinner />
+      )}
+
       {ticket && ticket.status !== 'closed' && (
         <button
           className='btn btn-block btn-danger btn-danger'
