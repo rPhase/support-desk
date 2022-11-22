@@ -63,6 +63,7 @@ const Ticket = () => {
     dispatch(createNote({ noteText, ticketID }))
       .unwrap()
       .then(() => {
+        setNoteText('');
         closeModal();
       })
       .catch(toast.error);
