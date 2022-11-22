@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -18,16 +18,10 @@ const Login = () => {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const { isLoading, isError, message } = useSelector((state) => state.auth);
+  const { isLoading } = useSelector((state) => state.auth);
 
   // Keep track of previous location to redirect to
   const from = location.state?.from?.pathname || '/';
-
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-  }, [isError, message]);
 
   const onChangeHandler = (e) => {
     setFormData((prevState) => ({
@@ -44,11 +38,12 @@ const Login = () => {
     };
     dispatch(login(userData))
       .unwrap()
-      .then(() => {
+      .then((user) => {
         // Success
-        toast.success('Successfully logged in.');
+        toast.success(`Logged in as ${user.name}`);
         navigate(from, { replace: true });
-      });
+      })
+      .catch(toast.error);
   };
 
   if (isLoading) {

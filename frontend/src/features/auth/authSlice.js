@@ -5,13 +5,12 @@ import { extractErrorMessage } from '../utils';
 // Get user from localstorage
 const user = JSON.parse(localStorage.getItem('user'));
 
-// Remove isSuccess from state
+// Remove isSuccess, isError, message from state
 // Can infer from presence or absence of user
+// errors can be caught when unwrapping thunk
 const initialState = {
   user,
   isLoading: false,
-  isError: false,
-  message: '',
 };
 
 // Register new user
@@ -54,24 +53,18 @@ export const authSlice = createSlice({
         // reset state on pending
         state.user = null;
         state.isLoading = true;
-        state.isError = false;
-        state.message = '';
       })
       .addCase(register.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isLoading = false;
       })
       .addCase(register.rejected, (state, action) => {
-        state.isError = true;
-        state.message = action.payload;
         state.user = null;
         state.isLoading = false;
       })
       .addCase(login.pending, (state) => {
         // reset state on pending
         state.user = null;
-        state.isError = false;
-        state.message = '';
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
@@ -79,8 +72,6 @@ export const authSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(login.rejected, (state, action) => {
-        state.isError = true;
-        state.message = action.payload;
         state.user = null;
         state.isLoading = false;
       })

@@ -1,12 +1,10 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FaUser } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { useSelector, useDispatch } from 'react-redux';
-import { register } from '../features/auth/authSlice';
-import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner';
+import { register } from '../features/auth/authSlice';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -21,13 +19,7 @@ const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isLoading, isError, message } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-  }, [isError, message]);
+  const { isLoading } = useSelector((state) => state.auth);
 
   const onChangeHandler = (e) => {
     setFormData((prevState) => ({
@@ -51,10 +43,11 @@ const Register = () => {
     };
     dispatch(register(userData))
       .unwrap()
-      .then(() => {
-        toast.success('Registered');
+      .then((user) => {
+        toast.success(`Registered as ${user.name}`);
         navigate('/');
-      });
+      })
+      .catch(toast.error);
   };
 
   if (isLoading) {
