@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner';
-import { login, reset } from '../features/auth/authSlice';
+import { login } from '../features/auth/authSlice';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,9 +18,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const { user, isLoading, isSuccess, isError, message } = useSelector(
-    (state) => state.auth
-  );
+  const { isLoading, isError, message } = useSelector((state) => state.auth);
 
   // Keep track of previous location to redirect to
   const from = location.state?.from?.pathname || '/';
@@ -29,13 +27,7 @@ const Login = () => {
     if (isError) {
       toast.error(message);
     }
-    // Redirect when logged in
-    if (isSuccess && user) {
-      navigate(from, { replace: true });
-    }
-
-    dispatch(reset());
-  }, [isError, isSuccess, user, message, navigate, dispatch, from]);
+  }, [isError, message]);
 
   const onChangeHandler = (e) => {
     setFormData((prevState) => ({
@@ -50,8 +42,13 @@ const Login = () => {
       email,
       password,
     };
-    dispatch(login(userData));
-    // toast.success('Submit');
+    dispatch(login(userData))
+      .unwrap()
+      .then(() => {
+        // Success
+        toast.success('Successfully logged in.');
+        navigate(from, { replace: true });
+      });
   };
 
   if (isLoading) {

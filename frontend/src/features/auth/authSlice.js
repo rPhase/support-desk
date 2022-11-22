@@ -5,11 +5,12 @@ import { extractErrorMessage } from '../utils';
 // Get user from localstorage
 const user = JSON.parse(localStorage.getItem('user'));
 
+// Remove isSuccess from state
+// Can infer from presence or absence of user
 const initialState = {
   user,
-  isError: false,
-  isSuccess: false,
   isLoading: false,
+  isError: false,
   message: '',
 };
 
@@ -47,43 +48,41 @@ export const logout = createAction('auth/logout', () => {
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {
-    reset: (state) => {
-      state.isLoading = false;
-      state.isError = false;
-      state.isSuccess = false;
-      state.message = '';
-    },
-  },
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
+        // reset state on pending
+        state.user = null;
         state.isLoading = true;
+        state.isError = false;
+        state.message = '';
       })
       .addCase(register.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
         state.user = action.payload;
+        state.isLoading = false;
       })
       .addCase(register.rejected, (state, action) => {
-        state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
         state.user = null;
+        state.isLoading = false;
       })
       .addCase(login.pending, (state) => {
+        // reset state on pending
+        state.user = null;
+        state.isError = false;
+        state.message = '';
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
         state.user = action.payload;
+        state.isLoading = false;
       })
       .addCase(login.rejected, (state, action) => {
-        state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
         state.user = null;
+        state.isLoading = false;
       })
       .addCase(logout, (state) => {
         state.user = null;
@@ -91,5 +90,4 @@ export const authSlice = createSlice({
   },
 });
 
-export const { reset } = authSlice.actions;
 export default authSlice.reducer;
